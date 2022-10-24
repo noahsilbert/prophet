@@ -1663,6 +1663,8 @@ class Prophet(object):
             )
         elif self.growth == "flat":
             expected = self.flat_trend(df["t"].values, m)
+        elif self.growth == "stepwise":
+            trend = self.stepwise(df["t"].values, deltas, k, self.params['m_'], changepoint_ts)
         else:
             raise NotImplementedError
         uncertainty = self._sample_uncertainty(df, n_samples, iteration)
