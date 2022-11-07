@@ -1664,7 +1664,7 @@ class Prophet(object):
         elif self.growth == "flat":
             expected = self.flat_trend(df["t"].values, m)
         elif self.growth == "stepwise":
-            trend = self.stepwise(df["t"].values, deltas, k, self.params['m_'], changepoint_ts)
+            expected = self.stepwise(df["t"].values, deltas, k, self.params['m_'], self.changepoints_t)
         else:
             raise NotImplementedError
         uncertainty = self._sample_uncertainty(df, n_samples, iteration)
@@ -1722,6 +1722,11 @@ class Prophet(object):
             elif self.growth == "flat":
                 # no trend uncertainty when there is no growth
                 uncertainties = np.zeros((n_samples, n_length))
+            # NHS 2022-11-07 added under dubious logic that uncertainty should be just like linear model...
+            elif self.growth == "stepwise":
+                mat = self._make_trend_shift_matrix(mean_delta, change_likelihood, n_length, n_samples=n_samples)
+                uncertainties = mat.cumsum(axis=1).cumsum(axis=1)  # from slope changes to actual values
+                uncertainties *= single_diff  # scaled by the actual meaning of the slope
             else:
                 raise NotImplementedError
             # handle past included in dataframe
