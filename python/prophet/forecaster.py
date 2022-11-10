@@ -1724,9 +1724,11 @@ class Prophet(object):
                 uncertainties = np.zeros((n_samples, n_length))
             # NHS 2022-11-07 added under dubious logic that uncertainty should be just like linear model...
             elif self.growth == "stepwise":
-                mat = self._make_trend_shift_matrix(mean_delta, change_likelihood, n_length, n_samples=n_samples)
-                uncertainties = mat.cumsum(axis=1).cumsum(axis=1)  # from slope changes to actual values
-                uncertainties *= single_diff  # scaled by the actual meaning of the slope
+                # NHS 2022-11-10 replaced with the possibly even more dubious logic that there is no trend uncertainty...
+                uncertainties = np.zeros((n_samples, n_length))
+                # mat = self._make_trend_shift_matrix(mean_delta, change_likelihood, n_length, n_samples=n_samples)
+                # uncertainties = mat.cumsum(axis=1).cumsum(axis=1)  # from slope changes to actual values
+                # uncertainties *= single_diff  # scaled by the actual meaning of the slope
             else:
                 raise NotImplementedError
             # handle past included in dataframe
